@@ -1,0 +1,5 @@
+<form [formGroup]="formGroup">
+  <input type="file" formControlName="imageFile" accept="image/*" (change)="onFileChange($event)">
+</form>
+<img [src]="imageUrl" [alt]="altText || 'Image description not available'" class="image"/>
+<p *ngIf="altText">AI Generated Alt (AWS): {{ altText }}</p>
