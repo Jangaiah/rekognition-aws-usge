@@ -3,3 +3,6 @@
 </form>
 <img [src]="imageUrl" [alt]="altText || 'Image description not available'" class="image"/>
 <p *ngIf="altText">AI Generated Alt (AWS): {{ altText }}</p>
+<div>
+<img *ngIf="isLoading" src="assets/images/loading.gif" alt="Loading Image" class="loader"/>
+</div>

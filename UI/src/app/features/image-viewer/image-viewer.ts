@@ -16,6 +16,8 @@ export class ImageViewer implements OnInit {
       imageFile: new FormControl(null)
     });;
 
+  isLoading: boolean = false;
+
 
   constructor(private visionService: VisionAws) {}
 
@@ -26,11 +28,13 @@ export class ImageViewer implements OnInit {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (file) {
       // Create URL for image preview
+      this.isLoading = true;
       this.imageUrl = URL.createObjectURL(file);
       
       // Send the file directly as blob
       this.visionService.generateAltText(file).subscribe(res => {
         this.altText = res.altText;
+        this.isLoading = false;
       });
     }
   }
