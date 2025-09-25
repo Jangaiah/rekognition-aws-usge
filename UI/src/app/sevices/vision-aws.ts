@@ -11,4 +11,7 @@ export class VisionAws {
   generateAltText(formData: FormData): Observable<any> {
     return this.http.post('http://localhost:3000/api/generate-alt', formData);
   }
+  enhanceContrast(formData: FormData): Observable<any> {
+    return this.http.post('http://localhost:3000/api/enhance-contrast', formData);
+  }
 }

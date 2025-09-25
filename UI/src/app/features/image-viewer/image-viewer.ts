@@ -10,7 +10,7 @@ import { FormGroup, FormControl, FormsModule, ReactiveFormsModule } from '@angul
   styleUrl: './image-viewer.scss'
 })
 export class ImageViewer implements OnInit {
-  @Input() imageUrl?: string;
+  imageUrl?: string;
   altText: string | null = null;
   formGroup: FormGroup = new FormGroup({
       imageFile: new FormControl(null)

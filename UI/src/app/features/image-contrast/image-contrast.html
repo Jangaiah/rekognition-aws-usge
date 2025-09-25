@@ -1,1 +1,74 @@
-<p>image-contrast works!</p>
+<div class="main-container">
+    <div class="left-side">
+        <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+            <input type="file" formControlName="imageFile" accept="image/*" (change)="onFileSelect($event)" />
+            <div style="margin-top: 20px;" *ngIf="imageUrl">Selcted Image:</div>
+            <div >
+                <img *ngIf="imageUrl" style="margin-top: 20px;" [src]="imageUrl" [alt]="'Image to check Contrast'" class="image"/>
+            </div>
+            
+            <button *ngIf="imageUrl" type="submit" class="submit-button" [disabled]="isLoading">Validate & Fix Contrast</button>
+        </form>
+    </div>
+    <div class="right-side">
+<div class="response-container">
+  <div>Validated Contrast (AWS): <span *ngIf="showResponse && message">{{ message }}</span></div>
+    </div>
+    
+    <div *ngIf="responseImageUrl" style="margin-top: 20px;">
+     <div class="image-container">
+        <!-- Base fixed image -->
+        <img [src]="responseImageUrl" alt="Fixed image"/>
+        </div>
+
+    </div>
+    <img *ngIf="isLoading" src="assets/images/loading.gif" alt="Loading Image" class="loader"/>
+    <div *ngIf="reports.length > 0 && showResponse" style="margin-top: 20px;font-weight: bold;">Reports</div>
+    <div *ngIf="reports.length > 0 && showResponse" style="width: 100%; overflow-x: auto; margin-top: 10px;">
+        <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+            <th>Detected Text</th>
+            <th>Bounding Box (W×H, L, T)</th>
+            <th>Contrast Ratio</th>
+            <th>Pass AA</th>
+            <th>Pass AAA</th>
+            <th>Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let report of reports">
+            <td>{{ report.detectedText || '-' }}</td>
+            <td>
+                <ng-container *ngIf="report.boundingBoxPx; else noBox">
+                W: {{ report.boundingBoxPx.width }},
+                H: {{ report.boundingBoxPx.height }},
+                L: {{ report.boundingBoxPx.left }},
+                T: {{ report.boundingBoxPx.top }}
+                </ng-container>
+                <ng-template #noBox>-</ng-template>
+            </td>
+            <td>{{ report.contrastRatio ? (report.contrastRatio | number:'1.2-2') : '-' }}</td>
+            <td>
+                <span [ngClass]="report.passAA ? 'text-success' : 'text-danger'">
+                {{ report.passAA ? '✔️' : '❌' }}
+                </span>
+            </td>
+            <td>
+                <span [ngClass]="report.passAAA ? 'text-success' : 'text-danger'">
+                {{ report.passAAA ? '✔️' : '❌' }}
+                </span>
+            </td>
+            <td>{{ report.type || '-' }}</td>
+            </tr>
+        </tbody>
+        </table>
+    </div>
+    
+
+</div>
+
+
+
+
+
