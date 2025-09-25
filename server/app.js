@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import multer from "multer";
 import { generateAltText } from "./aws-rekognition/aws-rekognition-service.js";
 
 const app = express();
@@ -14,8 +15,50 @@ app.use(cors({
 // Parse JSON for non-blob requests
 app.use(express.json());
 
+const upload = multer({ storage: multer.memoryStorage() });
+
 // Handle blob data for image processing
-app.post("/api/generate-alt", express.raw({ 
+app.post("/api/generate-alt", upload.single("file"), async (req, res) => {
+  try {
+    if (!req.file || !req.file.buffer) {
+      return res.status(400).json({ error: "No file uploaded or file is invalid." });
+    }
+
+    // Convert uploaded file to bytes (Buffer is already byte array)
+    const imageBuffer = req.file.buffer;
+
+    // Set up parameters for AWS Rekognition using the buffer
+    const params = {
+      Image: { 
+        Bytes: imageBuffer
+      },
+      MaxLabels: 5,
+      MinConfidence: 75,
+    };
+
+    // Generate alt text using AWS Rekognition and await the result
+    const altText = await generateAltText(params);
+
+    // Send response after getting the alt text
+    res.json({ altText });
+  } catch (err) {
+    console.error("Error processing image:", err);
+    
+    // Provide more specific error messages based on the error type
+    if (err.code === 'InvalidImageFormatException') {
+      res.status(400).json({ error: "Invalid image format. Please provide a valid image file." });
+    } else if (err.code === 'ImageTooLargeException') {
+      res.status(400).json({ error: "Image size too large. Maximum size is 5MB." });
+    } else {
+      res.status(500).json({ 
+        error: "Failed to process image",
+        details: process.env.NODE_ENV === 'development' ? err.message : undefined
+      });
+    }
+  }
+});
+
+app.post("/api/image-contrast-fix", express.raw({
   type: ['image/*', 'application/octet-stream'], 
   limit: '5mb' 
 }), async (req, res) => {
@@ -24,9 +67,6 @@ app.post("/api/generate-alt", express.raw({
     if (!req.body || !Buffer.isBuffer(req.body)) {
       return res.status(400).json({ error: "Invalid image data. Expected a binary buffer." });
     }
-
-    // Log the size of received data
-    console.log("Received image data size:", req.body.length, "bytes");
 
     // Set up parameters for AWS Rekognition using the buffer
     const params = {

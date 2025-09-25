@@ -1,8 +1,16 @@
-<form [formGroup]="formGroup">
-  <input type="file" formControlName="imageFile" accept="image/*" (change)="onFileChange($event)">
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+  <input type="file" formControlName="imageFile" accept="image/*" (change)="onFileSelect($event)" />
+  <div style="margin-top: 20px;" *ngIf="imageUrl">Selcted Image:</div>
+  <div >
+    <img style="margin-top: 20px;" [src]="imageUrl" [alt]="altText || 'Image description not available'" class="image"/>
+  </div>
+  
+  <button *ngIf="imageUrl" type="submit" class="submit-button">Generate Alt Text</button>
 </form>
-<img [src]="imageUrl" [alt]="altText || 'Image description not available'" class="image"/>
-<p *ngIf="altText">AI Generated Alt (AWS): {{ altText }}</p>
-<div>
-<img *ngIf="isLoading" src="assets/images/loading.gif" alt="Loading Image" class="loader"/>
+
+
+<div class="response-container">
+  <div>AI Generated Alt (AWS): <span *ngIf="showResponse">{{ altText }}</span></div>
+  <img *ngIf="isLoading" src="assets/images/loading.gif" alt="Loading Image" class="loader"/>
 </div>
+

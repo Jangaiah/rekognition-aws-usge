@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -7,15 +8,7 @@ import { Injectable } from '@angular/core';
 export class VisionAws {
   constructor(private http: HttpClient) {}
 
-  generateAltText(file: File | Blob) {
-    return this.http.post<{ altText: string }>(
-      'http://localhost:3000/api/generate-alt',
-      file,
-      {
-        headers: {
-          'Content-Type': file.type || 'application/octet-stream'
-        }
-      }
-    );
+  generateAltText(formData: FormData): Observable<any> {
+    return this.http.post('http://localhost:3000/api/generate-alt', formData);
   }
 }

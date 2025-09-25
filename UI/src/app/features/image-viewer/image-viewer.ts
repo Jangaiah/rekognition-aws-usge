@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, NgZone, OnInit } from '@angular/core';
 import { VisionAws } from '../../sevices/vision-aws';
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -10,32 +10,53 @@ import { FormGroup, FormControl, FormsModule, ReactiveFormsModule } from '@angul
   styleUrl: './image-viewer.scss'
 })
 export class ImageViewer implements OnInit {
-  @Input() imageUrl: string = 'assets/images/free-nature-images.jpg';
+  @Input() imageUrl?: string;
   altText: string | null = null;
   formGroup: FormGroup = new FormGroup({
       imageFile: new FormControl(null)
-    });;
+    });
+  selectedFile?: File | null = null;
 
   isLoading: boolean = false;
+  showResponse: boolean = false;
 
 
-  constructor(private visionService: VisionAws) {}
+  constructor(private visionService: VisionAws, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
   }
 
-  onFileChange(event: Event) {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (file) {
-      // Create URL for image preview
-      this.isLoading = true;
-      this.imageUrl = URL.createObjectURL(file);
-      
-      // Send the file directly as blob
-      this.visionService.generateAltText(file).subscribe(res => {
-        this.altText = res.altText;
-        this.isLoading = false;
-      });
+   onFileSelect(event: any) {
+    if (event.target.files && event.target.files.length > 0) {
+      this.selectedFile = event.target.files[0];
+
+      const reader = new FileReader();
+      reader.onload = () => {
+          this.imageUrl = reader.result as string;
+          this.cdr.markForCheck();
+      };
+      reader.readAsDataURL(this.selectedFile as File);
     }
+  }
+
+
+  onSubmit() {
+    const formData = new FormData();
+    formData.append('file', this.selectedFile as File);
+    
+    this.isLoading = true;
+    this.showResponse = false;
+    this.visionService.generateAltText(formData).subscribe((data) =>{
+        this.altText = data.altText;
+        this.isLoading = false;
+        this.showResponse = true;
+        this.cdr.markForCheck();
+      },
+      (error) => {
+        console.error('Error generating alt text:', error);
+        this.isLoading = false;
+        this.showResponse = false;
+        this.cdr.markForCheck();
+    });
   }
 }

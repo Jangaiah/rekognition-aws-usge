@@ -18,8 +18,9 @@ export function generateAltText(params) {
         reject(new Error("Error generating alt text."));
       } else {
         const labels = data.Labels.map(label => label.Name.toLowerCase());
+        console.log("Detected Alt Text words:", labels);
         // Build a simple alt text sentence
-        const altText = `Image may contain: ${labels.join(", ")}.`;
+        const altText = `Image contain: ${labels.join(", ")}.`;
         resolve(altText);
       }
     });
