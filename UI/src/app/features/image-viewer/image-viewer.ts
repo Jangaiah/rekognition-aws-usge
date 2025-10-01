@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, Input, NgZone, OnInit } from '@angular/core';
-import { VisionAws } from '../../sevices/vision-aws';
+import { VisionAws } from '../../services/vision-aws';
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 

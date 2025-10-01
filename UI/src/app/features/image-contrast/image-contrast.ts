@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { VisionAws } from '../../sevices/vision-aws';
+import { VisionAws } from '../../services/vision-aws';
 import { ImageAnalysisReport } from '../../models/Image-analysis-report.model';
 
 @Component({
