@@ -17,9 +17,11 @@
     
     <div *ngIf="responseImageUrl" style="margin-top: 20px;">
      <div class="image-container">
-        <!-- Base fixed image -->
-        <img [src]="responseImageUrl" alt="Fixed image"/>
+        <div style="position: relative; display: inline-block;">
+            <img #imageRef [src]="responseImageUrl" alt="Fixed image" (load)="onResponseImageLoad($event)"/>
+            <canvas #canvasRef style="position: absolute; top: 0; left: 0;"></canvas>
         </div>
+    </div>
 
     </div>
     <img *ngIf="isLoading" src="assets/images/loading.gif" alt="Loading Image" class="loader"/>

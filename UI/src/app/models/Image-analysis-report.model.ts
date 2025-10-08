@@ -12,11 +12,11 @@ export interface ImageAnalysisReport {
         left: number;
         top: number;
     };
-    foregroundColor?: { r: number; g: number; b: number };
-    backgroundColor?: { r: number; g: number; b: number };
+    foreground?: { r: number; g: number; b: number };
+    background?: { r: number; g: number; b: number };
     contrastRatio?: number;
     passAA?: boolean;
     passAAA?: boolean;
     type?: string
-    polygon: Array<{ x: number; y: number }>;
+    polygon: Array<{ X: number; Y: number }>;
 }
